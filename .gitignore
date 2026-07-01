@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Never commit real password data
+*.csv
+!examples/sample_export.csv
+!examples/*.example.csv
+
+.DS_Store
