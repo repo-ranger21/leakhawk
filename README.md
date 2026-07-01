@@ -1,5 +1,7 @@
 # LeakHawk
 
+[![Tests](https://github.com/repo-ranger21/leakhawk/actions/workflows/tests.yml/badge.svg)](https://github.com/repo-ranger21/leakhawk/actions/workflows/tests.yml)
+
 > *Sees through the disguise.*
 
 A local-first password audit tool that goes beyond "have I been pwned" —
@@ -79,6 +81,17 @@ Each entry gets a 0–100 risk score combining:
 
 Scores map to **CRITICAL / HIGH / MEDIUM / GOOD**.
 
+## Testing
+
+```bash
+pip install -r requirements-dev.txt
+pytest tests/ -v
+```
+
+68 tests cover the pattern detection engine, entropy/risk scoring,
+password generation, and CSV import edge cases. CI runs the suite on
+Python 3.10–3.12 on every push.
+
 ## Project structure
 
 ```
@@ -93,6 +106,12 @@ src/
   exporter.py         CSV export for replacements
 examples/
   sample_export.csv  Test fixture
+tests/
+  conftest.py           Shared pytest fixtures
+  test_pattern_detect.py Pattern engine tests
+  test_entropy.py         Scoring tests
+  test_generator.py       Generator tests
+  test_importer.py        CSV parsing tests
 ```
 
 ## Roadmap

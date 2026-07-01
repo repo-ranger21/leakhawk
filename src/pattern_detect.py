@@ -27,9 +27,23 @@ KEYBOARD_ROWS = [
     "zxcvbnm,./",
 ]
 
+# Common vertical/diagonal keyboard zigzags — typed by alternating
+# hands down two adjacent columns. These show up constantly in real
+# breach corpora (1qaz2wsx, qazwsx, etc.) but never appear as a
+# substring of a single horizontal row, so they need their own list.
+KEYBOARD_ZIGZAGS = [
+    "1qaz2wsx3edc4rfv5tgb6yhn7ujm",
+    "qazwsxedcrfvtgbyhnujm",
+    "1qaz",
+    "2wsx",
+    "3edc",
+]
+
 
 def _keyboard_walks(min_len: int = 4):
-    """Generates forward and reverse substrings of keyboard rows."""
+    """Generates forward and reverse substrings of keyboard rows,
+    plus known vertical/diagonal zigzag patterns (e.g. 1qaz2wsx) that
+    don't appear in any single horizontal row."""
     walks = set()
     for row in KEYBOARD_ROWS:
         for length in range(min_len, len(row) + 1):
@@ -37,6 +51,17 @@ def _keyboard_walks(min_len: int = 4):
                 chunk = row[i:i + length]
                 walks.add(chunk)
                 walks.add(chunk[::-1])
+
+    # Common vertical/diagonal zigzags typed with alternating hands —
+    # these are some of the most common "looks random" passwords in
+    # breach corpora precisely because they don't match a single row.
+    for zigzag in KEYBOARD_ZIGZAGS:
+        for length in range(min_len, len(zigzag) + 1):
+            for i in range(len(zigzag) - length + 1):
+                chunk = zigzag[i:i + length]
+                walks.add(chunk)
+                walks.add(chunk[::-1])
+
     return walks
 
 
@@ -83,6 +108,7 @@ def contains_personal_info(password: str, username: str, site_name: str):
     pw_lower = password.lower()
 
     email_local = username.split("@")[0] if "@" in username else username
+    email_local = re.sub(r"[^a-zA-Z0-9]", "", email_local)  # strip dots, +tags, etc.
     if email_local and len(email_local) >= 3 and email_local.lower() in pw_lower:
         findings.append("contains username/email")
 
